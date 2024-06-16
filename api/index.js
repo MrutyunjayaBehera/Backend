@@ -51,7 +51,15 @@ app.post("/login", async (req, res) => {
 	const { data, error } = await supabase.auth.signInWithPassword({
 		email: email,
 		password: password
-  	})
+	})
+	
+	
+	if (error) {
+		const { __isAuthError = false, status } = error;
+		if (__isAuthError) {
+			return res.status(400).send({ error: error.message, status: status });
+		}
+	}
   
 	res.send(data);  
 });
