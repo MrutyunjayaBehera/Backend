@@ -39,29 +39,54 @@ app.post("/signup", async (req, res) => {
 		email: email,
 		password: password
 		// password: 'bwLQFjBPtSGVbGcMFbwq'
-  	})
-  
-	res.send(data);  
+	})
+
+	const { user = {} } = data || {};
+
+	const { error: insertError } = await supabase
+		.from('user')
+		.insert({ name: user?.email, email: user?.email })
+		.select();
+
+	res.send(data);
 });
 
 app.post("/login", async (req, res) => {
 
 	const { email = '', password = '' } = req.body || {};
-	
+
 	const { data, error } = await supabase.auth.signInWithPassword({
 		email: email,
 		password: password
 	})
-	
-	
+
+
 	if (error) {
 		const { __isAuthError = false, status } = error;
 		if (__isAuthError) {
 			return res.status(400).send({ error: error.message, status: status });
 		}
 	}
-  
-	res.send(data);  
+
+	res.send(data);
+});
+
+
+app.get("/list_users", async (req, res) => {
+
+	console.log('datda:: ', req.body);
+
+	try {
+		const { data, error } = await supabase.from('user').select('*');
+		if (error) {
+			throw error;
+		}
+		res.status(200).json(data);
+	} catch (error) {
+		console.error('Error fetching users:', error.message);
+		res.status(500).json({ error: 'Failed to fetch users' });
+	}
+
 });
 
 
