@@ -141,7 +141,7 @@ const dictRequest = Axios.create({
 });
 
 bot.on('message', async (msg) => {
-	console.log('msg:: ', msg);
+	console.log('msg::: ', msg);
 	const chatId = msg.chat.id;
 	console.log('chatId:: ', chatId);
 	if (msg.text) {
