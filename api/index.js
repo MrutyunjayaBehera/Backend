@@ -101,7 +101,7 @@ const bot = new TelegramBot(token, {polling: true});
 //   bot.sendMessage(chatId, resp);
 // });
 
-const webhookUrl = `https://${process.env.VERCEL_DEPLOYED_URL}/api/index.js`;
+const webhookUrl = process.env.VERCEL_DEPLOYED_URL;
 bot.setWebHook(webhookUrl);
 
 const dictRequest = Axios.create({
