@@ -95,7 +95,7 @@ const dictRequest = Axios.create({
 	baseURL: 'https://api.dictionaryapi.dev/api/v2/entries/en',
 });
 const token = process.env.TELEGRAM_BOT_01;
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(token, { polling: false });
 const webhookUrl = process.env.VERCEL_DEPLOYED_URL;
 bot.setWebHook(webhookUrl);
 
