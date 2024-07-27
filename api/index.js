@@ -19,48 +19,7 @@ const request = Axios.create({
 	}
 });
 
-// replace the value below with the Telegram token you receive from @BotFather
-const token = process.env.TELEGRAM_BOT_01;
-const bot = new TelegramBot(token, { polling: true });
-const webhookUrl = process.env.VERCEL_DEPLOYED_URL;
-bot.setWebHook(webhookUrl);
-
 app.get('/', (req, res) => {
-
-	// TELEGRAM BOT API
-	// ==========================================================
-	// bot.onText(/\/echo (.+)/, (msg, match) => {
-	//   const chatId = msg.chat.id;
-	//   const resp = match[1];
-	//   bot.sendMessage(chatId, resp);
-	// });
-
-	const dictRequest = Axios.create({
-		baseURL: 'https://api.dictionaryapi.dev/api/v2/entries/en',
-	});
-
-	bot.on('message', async (msg) => {
-		console.log('msg::: ', msg);
-		const chatId = msg.chat.id;
-		console.log('chatId:: ', chatId);
-		if (msg.text) {
-			const txt = msg.text;
-			try {
-				const res = await dictRequest.get(`/${txt}`);
-				const { meanings = [] } = res?.data?.[0];
-				const { definitions = [] } = meanings?.[0];
-				const { definition = '', example = '' } = definitions?.[0];
-				bot.sendMessage(chatId, definition);
-				if (example) {
-					bot.sendMessage(chatId, `Example: ${example}`);
-				}
-			} catch (error) {
-				bot.sendMessage(chatId, error);
-			}
-		}
-	});
-	// ==========================================================
-
 	res.send('Hello World!');
 });
 
@@ -130,6 +89,38 @@ app.get("/list_users", async (req, res) => {
 	}
 
 });
+
+
+const dictRequest = Axios.create({
+	baseURL: 'https://api.dictionaryapi.dev/api/v2/entries/en',
+});
+const token = process.env.TELEGRAM_BOT_01;
+const bot = new TelegramBot(token, { polling: true });
+const webhookUrl = process.env.VERCEL_DEPLOYED_URL;
+bot.setWebHook(webhookUrl);
+
+app.post('/telegram-webhook', () => {
+	bot.on('message', async (msg) => {
+		console.log('msg::: ', msg);
+		const chatId = msg.chat.id;
+		console.log('chatId:: ', chatId);
+		if (msg.text) {
+			const txt = msg.text;
+			try {
+				const res = await dictRequest.get(`/${txt}`);
+				const { meanings = [] } = res?.data?.[0];
+				const { definitions = [] } = meanings?.[0];
+				const { definition = '', example = '' } = definitions?.[0];
+				bot.sendMessage(chatId, definition);
+				if (example) {
+					bot.sendMessage(chatId, `Example: ${example}`);
+				}
+			} catch (error) {
+				bot.sendMessage(chatId, error);
+			}
+		}
+	});
+})
 
 
 app.listen(port, () => {
