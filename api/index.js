@@ -99,6 +99,12 @@ const bot = new TelegramBot(token, { polling: true });
 const webhookUrl = process.env.VERCEL_DEPLOYED_URL;
 bot.setWebHook(webhookUrl);
 
+app.post('/', (req, res) => {
+	console.log('req.body:: ', req.body);
+	bot.processUpdate(req.body);
+	res.sendStatus(200);
+});
+
 // app.post('/telegram-webhook', () => {
 	bot.on('message', async (msg) => {
 		console.log('msg::: ', msg);
