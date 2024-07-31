@@ -96,11 +96,10 @@ const dictRequest = Axios.create({
 });
 const token = process.env.TELEGRAM_BOT_01;
 const bot = new TelegramBot(token, { polling: true });
-const webhookUrl = process.env.VERCEL_DEPLOYED_URL;
+const webhookUrl = `${process.env.VERCEL_DEPLOYED_URL}/api/telegram`;
 bot.setWebHook(webhookUrl);
 
-app.post('/', (req, res) => {
-	console.log('req.body:: ', req.body);
+app.post('/api/telegram', (req, res) => {
 	bot.processUpdate(req.body);
 	res.sendStatus(200);
 });
