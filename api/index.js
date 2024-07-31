@@ -119,7 +119,23 @@ bot.setWebHook(webhookUrl);
 				bot.sendMessage(chatId, error);
 			}
 		}
+		// const options = {
+		// 	reply_markup: {
+		// 	  inline_keyboard: [
+		// 		[{ text: 'Option 1', callback_data: 'option1' }],
+		// 		[{ text: 'Option 2', callback_data: 'option2' }]
+		// 	  ]
+		// 	}
+		//   };
+		//   bot.sendMessage(chatId, 'Choose an option:', options);
 	});
+	// bot.on('callback_query', (query) => {
+	// 	const chatId = query.message.chat.id;
+	// 	const messageId = query.message.message_id;
+	// 	const data = query.data;
+	// 	console.log(data);
+	// 	bot.answerCallbackQuery(query.id, { text: `You selected ${data}` });
+	//   });
 // })
 
 
