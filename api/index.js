@@ -91,53 +91,54 @@ app.get("/list_users", async (req, res) => {
 });
 
 
-// =====================================================================================
 const dictRequest = Axios.create({
 	baseURL: 'https://api.dictionaryapi.dev/api/v2/entries/en',
 });
 const token = process.env.TELEGRAM_BOT_01;
 const bot = new TelegramBot(token, { polling: true });
-const SERVER_URL = process.env.VERCEL_DEPLOYED_URL;
-const TELEGRAM_API = `https://api.telegram.org/bot${token}`;
-const URI = `/webhook/${token}`;
-const webhookURL = `${SERVER_URL}${URI}`;
+const webhookUrl = process.env.VERCEL_DEPLOYED_URL;
+bot.setWebHook(webhookUrl);
 
-const setupWebhook = async () => {
-	try {
-		const { data } = await Axios.get(`${TELEGRAM_API}/setWebhook?url=${webhookURL}&drop_pending_updates=true`)
-		console.log(data)
-	} catch (error) {
-		return error
-	}
-}
-
-bot.on('message', async (msg) => {
-	console.log('msg::: ', msg);
-	const chatId = msg.chat.id;
-	console.log('chatId:: ', chatId);
-	if (msg.text) {
-		const txt = msg.text;
-		try {
-			const res = await dictRequest.get(`/${txt}`);
-			const { meanings = [] } = res?.data?.[0];
-			const { definitions = [] } = meanings?.[0];
-			const { definition = '', example = '' } = definitions?.[0];
-			bot.sendMessage(chatId, definition);
-			if (example) {
-				bot.sendMessage(chatId, `Example: ${example}`);
+// app.post('/telegram-webhook', () => {
+	bot.on('message', async (msg) => {
+		console.log('msg::: ', msg);
+		const chatId = msg.chat.id;
+		console.log('chatId:: ', chatId);
+		if (msg.text) {
+			const txt = msg.text;
+			try {
+				const res = await dictRequest.get(`/${txt}`);
+				const { meanings = [] } = res?.data?.[0];
+				const { definitions = [] } = meanings?.[0];
+				const { definition = '', example = '' } = definitions?.[0];
+				bot.sendMessage(chatId, definition);
+				if (example) {
+					bot.sendMessage(chatId, `Example: ${example}`);
+				}
+			} catch (error) {
+				bot.sendMessage(chatId, error);
 			}
-		} catch (error) {
-			bot.sendMessage(chatId, error);
 		}
-	}
-});
+		// const options = {
+		// 	reply_markup: {
+		// 	  inline_keyboard: [
+		// 		[{ text: 'Option 1', callback_data: 'option1' }],
+		// 		[{ text: 'Option 2', callback_data: 'option2' }]
+		// 	  ]
+		// 	}
+		//   };
+		//   bot.sendMessage(chatId, 'Choose an option:', options);
+	});
+	// bot.on('callback_query', (query) => {
+	// 	const chatId = query.message.chat.id;
+	// 	const messageId = query.message.message_id;
+	// 	const data = query.data;
+	// 	console.log(data);
+	// 	bot.answerCallbackQuery(query.id, { text: `You selected ${data}` });
+	//   });
+// })
 
-// ===============================================================================
-app.listen(port, async () => {
-	try {
-		console.log(`Server is up and Running at PORT : ${port}`)
-		await setupWebhook()
-	} catch (error) {
-		console.log(error.message)
-	}
-})
+
+app.listen(port, () => {
+	console.log(`Example app listening at http://localhost:${port}`);
+});
